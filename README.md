@@ -52,24 +52,40 @@ graph TD
 
 ---
 
-## 🚀 Quick Start (5 Seconds)
+## 🚀 Installation & Setup
 
-Add AgentOS to any project instantly:
+### 1. Install the Antigravity Plugin (CLI/IDE Orchestration)
+If you are developing inside Google Antigravity (or an Antigravity-supported CLI/IDE), install the plugin to expose the global MCP Server and execution hook policies:
 
-### 1. Bootstrap the Engine
-Run the bootstrap script inside your target project root:
-```bash
-python uall_bootstrap.py
-```
-This initializes the `.agent/` directory structure, detects your project type, and sets up your local configurations.
+* **Locate the plugin folder:** Ensure the `plugin/` directory in this repository is accessible.
+* **Copy to your global plugin directory:**
+  * **macOS / Linux:** Copy the `plugin/` directory to `~/.gemini/config/plugins/uall-plugin/`
+  * **Windows:** Copy the `plugin/` directory to `C:\Users\<username>\.gemini\config\plugins\uall-plugin\` (e.g., `C:\Users\Johnny Cage\.gemini\config\plugins\uall-plugin\`)
+* **Restart the Agent:** Restart your Antigravity CLI or reload your IDE window to register the new plugin configurations.
 
-### 2. Check Agent Status
-Check the status of the local AgentOS brain:
-```bash
-python uall.py /status
-```
+Once installed:
+* Global pre-command safety checks defined in `hooks.json` will intercept commands.
+* The global `uall-server` MCP toolset becomes available.
 
-### 3. Connect to your IDE (MCP Setup)
+---
+
+### 2. Bootstrap your Project (Deploying the Template)
+To run AgentOS inside any codebase workspace:
+
+* **Drop the Bootstrap Files:** Copy `uall_bootstrap.py` and `uall.py` to your target project root directory.
+* **Bootstrap the Engine:** Run the bootstrap script:
+  ```bash
+  python uall_bootstrap.py
+  ```
+  This creates the local `.agent/` directory skeleton, generates configuration stubs, and initializes Git in the target project.
+* **Deploy via Master Installer (Optional):** Copy the full pre-configured template to a new target path:
+  ```bash
+  python uall_master_installer.py /path/to/target/project
+  ```
+
+---
+
+### 3. Setup the IDE Integration (MCP Server)
 AgentOS exposes a local Model Context Protocol (MCP) server so Cursor, Claude Desktop, or VSCode can access its tools natively. 
 
 Add this to your IDE's MCP settings:
@@ -85,6 +101,49 @@ Add this to your IDE's MCP settings:
 }
 ```
 *(For detailed setup and configurations, see [MCP_SETUP.md](file:///C:/Users/Johnny%20Cage/Projects/UALL-Antigravity/MCP_SETUP.md))*
+
+---
+
+## 📋 Daily Workflow Guide
+
+Once set up, run commands via `uall.py` inside your project root to manage your AI agent:
+
+### 1. Initialize Task Context
+Before the agent starts, link the workspace to a specific task ticket (e.g. Jira, Linear, or GitHub issues):
+```bash
+python uall.py /task TASK-101
+```
+
+### 2. Recall Project Memory
+Have the agent search semantic history, entity relations, and active failure-avoidance hints before writing code:
+```bash
+python uall.py /recall "JWT auth verification logic"
+```
+
+### 3. Shadow-Trace Commands
+Wrap every shell command (like compiling, linting, or package installations) using `tracer.py` so AgentOS can log metrics, track files, and intercept errors:
+```bash
+python .agent/tools/tracer.py "npm install"
+```
+
+### 4. Auto-Heal Failures
+If commands fail, run healing to analyze episodic tracebacks and auto-generate context-aware active hints:
+```bash
+python uall.py /heal
+```
+
+### 5. Run Quality & Security Gates
+Validate your code changes before committing. This runs Semgrep security checks, Ruff formatting rules, and Pytest suites:
+```bash
+python uall.py /verify
+```
+
+### 6. Git-Checkpoint verified State
+Once `/verify` returns `VALID`, unlock and save your current progress with a Git-signed checkpoint commit:
+```bash
+python uall.py /checkpoint "Initial auth implementation"
+```
+*(If an agent breaks your code, roll back instantly using `python uall.py /recover`)*
 
 ---
 
