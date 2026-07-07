@@ -72,13 +72,17 @@ Once installed:
 ### 2. Bootstrap your Project (Deploying the Template)
 To run AgentOS inside any codebase workspace:
 
-* **Drop the Bootstrap Files:** Copy `uall_bootstrap.py` and `uall.py` to your target project root directory.
-* **Bootstrap the Engine:** Run the bootstrap script:
+* **Option A: Run the MCP Server Tool (Easiest)**
+  If you have the Antigravity plugin installed and connected, your agent can bootstrap the project directly by calling the `uall_bootstrap` tool. Just tell your agent:
+  > *"Please bootstrap this project with AgentOS"*
+* **Option B: Run the Bootstrap Script**
+  Copy `uall_bootstrap.py` and `uall.py` to your target project root and run:
   ```bash
   python uall_bootstrap.py
   ```
-  This creates the local `.agent/` directory skeleton, generates configuration stubs, and initializes Git in the target project.
-* **Deploy via Master Installer (Optional):** Copy the full pre-configured template to a new target path:
+  This creates the local `.agent/` directory skeleton, generates configuration stubs, and initializes Git.
+* **Option C: Deploy via Master Installer (Optional)**
+  Deploy the full pre-configured template package to a target directory:
   ```bash
   python uall_master_installer.py /path/to/target/project
   ```

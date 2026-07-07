@@ -52,6 +52,7 @@ Once connected, your AI assistant will gain access to the following capabilities
 
 | Tool Name | CLI Equivalent | Description |
 | :--- | :--- | :--- |
+| `uall_bootstrap` | `uall_bootstrap.py` | Bootstraps the active workspace with the AgentOS structure and stubs |
 | `uall_recall` | `/recall` | Queries FTS5 full-text index & knowledge graph context |
 | `uall_status` | `/status` | Fetches agent brain health metrics, log counts, & status |
 | `uall_gate` | `gate.py` | Validates command execution requests against local GOVERNANCE.md |
