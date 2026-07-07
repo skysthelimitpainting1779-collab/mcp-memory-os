@@ -10,7 +10,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-SOURCE_DIR = Path(__file__).parent / "template"
+SOURCE_DIR = Path(__file__).parent / "plugin" / "template"
 
 
 def deploy(target_dir: Path) -> None:

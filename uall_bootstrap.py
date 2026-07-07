@@ -42,15 +42,15 @@ def bootstrap() -> None:
 
     # 2. Copy tools from installer source if available
     installer_root = Path(__file__).parent
-    template_tools = installer_root / "uall-template" / ".agent" / "tools"
+    template_tools = installer_root / "plugin" / "template" / ".agent" / "tools"
     if template_tools.exists():
         for tool in template_tools.glob("*.py"):
             dst = Path(".agent/tools") / tool.name
             if not dst.exists():
                 shutil.copy2(tool, dst)
-        print("✅ Tools copied from uall-template")
+        print("✅ Tools copied from template")
     else:
-        print("⚠️  uall-template not found — tools must be added manually")
+        print("⚠️  template not found in plugin/template — tools must be added manually")
 
     # 3. Core governance stub
     gov_path = Path(".agent/GOVERNANCE.md")

@@ -1,6 +1,0 @@
-reflection_cycle:
-  post_task: true
-  nightly_dream: true
-  graduation_threshold: 0.75
-  max_candidate_age_days: 30
-  auto_prune_stale_candidates: true

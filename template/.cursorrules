@@ -1,8 +1,0 @@
-# Cursor Rules for UALL
-# This file tells Cursor to prioritize UALL memory and tools.
-
-- Always run `python3 .agent/tools/recall.py --task "<your_current_task>"` at the start of a session.
-- Before editing files in `.agent/`, verify the action via `python3 .agent/tools/gate.py write <file_path>`.
-- Log all major tool outputs and decisions to `.agent/memory/episodic/`.
-- Respect the boundaries defined in `.agent/GOVERNANCE.md`.
-- Use `/checkpoint` (via `python3 uall.py /checkpoint "<msg>"`) after significant milestones.
