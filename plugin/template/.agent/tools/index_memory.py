@@ -123,6 +123,52 @@ def index_episodic_logs(conn: sqlite3.Connection, force: bool = False) -> int:
     return total
 
 
+def index_graph_entities(conn: sqlite3.Connection, force: bool = False) -> int:
+    """Index entities.md block by block. Each block -> one FTS entry."""
+    entities_path = AGENT / "memory" / "graph" / "entities.md"
+    if not entities_path.exists():
+        return 0
+    mtime = entities_path.stat().st_mtime
+    if not force:
+        row = conn.execute(
+            "SELECT mtime FROM index_state WHERE path = ?", (str(entities_path),)
+        ).fetchone()
+        if row and row[0] >= mtime:
+            return 0
+            
+    conn.execute("DELETE FROM memory_fts WHERE content_id = ?", (str(entities_path),))
+    content = entities_path.read_text(encoding="utf-8")
+    
+    blocks = content.split("---")
+    total = 0
+    for block in blocks:
+        block = block.strip()
+        if not block or block.startswith("#"):
+            continue
+        try:
+            data = json.loads(block)
+            body = " ".join(filter(None, [
+                data.get("name", ""),
+                data.get("type", ""),
+                data.get("source_file", ""),
+                data.get("source_location", ""),
+            ]))
+            conn.execute(
+                "INSERT INTO memory_fts (content_id, type, body, metadata) VALUES (?, ?, ?, ?)",
+                (str(entities_path), "graph_entity", body, json.dumps(data))
+            )
+            total += 1
+        except json.JSONDecodeError:
+            continue
+            
+    conn.execute(
+        "INSERT OR REPLACE INTO index_state (path, mtime) VALUES (?, ?)",
+        (str(entities_path), mtime)
+    )
+    return total
+
+
+
 def remove_stale_entries(conn: sqlite3.Connection) -> int:
     """Remove index entries for files that no longer exist."""
     rows = conn.execute("SELECT path FROM index_state").fetchall()
@@ -176,6 +222,11 @@ def main():
     if log_total:
         print(f"  ✔ indexed {log_total} episodic log entries")
 
+    # Index graph entities
+    graph_total = index_graph_entities(conn, force=args.force)
+    if graph_total:
+        print(f"  ✔ indexed {graph_total} graph entities")
+
     # Prune stale entries
     removed = remove_stale_entries(conn)
     if removed:
@@ -184,8 +235,8 @@ def main():
     conn.commit()
     conn.close()
 
-    if indexed or log_total or removed:
-        print(f"\n✅ Index updated: +{indexed} files, +{log_total} log entries, -{removed} stale")
+    if indexed or log_total or graph_total or removed:
+        print(f"\n✅ Index updated: +{indexed} files, +{log_total} logs, +{graph_total} entities, -{removed} stale")
     else:
         print("✅ Index already up to date.")
 

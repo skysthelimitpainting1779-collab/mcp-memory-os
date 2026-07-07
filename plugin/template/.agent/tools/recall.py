@@ -54,6 +54,32 @@ def get_self_healing_hints() -> str | None:
 
 
 def get_graph_context(task_query: str) -> list[str]:
+    graph_json_path = ROOT / "graphify-out" / "graph.json"
+    HAS_GRAPHIFY = False
+    try:
+        import graphify
+        HAS_GRAPHIFY = True
+    except ImportError:
+        pass
+
+    if HAS_GRAPHIFY and graph_json_path.exists():
+        import subprocess
+        cmd = [sys.executable, "-m", "graphify", "query", task_query, "--budget", "1000"]
+        try:
+            res = subprocess.run(cmd, capture_output=True, text=True, cwd=str(ROOT))
+            if res.returncode == 0:
+                lines = res.stdout.strip().splitlines()
+                paths = []
+                for line in lines:
+                    line = line.strip()
+                    if line.startswith("EDGE "):
+                        clean = line.replace("EDGE ", "").split("[")[0].strip()
+                        paths.append(clean)
+                if paths:
+                    return paths[:8]
+        except Exception:
+            pass
+
     graph_rel_path = AGENT / "memory" / "graph" / "relationships.jsonl"
     if not graph_rel_path.exists():
         return []

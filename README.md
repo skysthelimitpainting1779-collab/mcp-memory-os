@@ -124,25 +124,41 @@ Have the agent search semantic history, entity relations, and active failure-avo
 python uall.py /recall "JWT auth verification logic"
 ```
 
-### 3. Shadow-Trace Commands
+### 3. Map Codebase Structure (Graphifyy)
+Map all classes, methods, imports, and calls inside your workspace. When `graphify` is installed, UALL's graph builder will use it as the primary AST/semantic extraction engine, feeding these relationships directly into the `/recall` memory index:
+* **Scan and extract codebase:**
+  ```bash
+  python uall.py /graphify
+  ```
+* **Query graph connections:**
+  ```bash
+  python uall.py /graphify --query "Which module contains the user login handlers?"
+  ```
+* **Show interactive collapsible tree:**
+  ```bash
+  python uall.py /graphify --tree
+  ```
+  *(Outputs interactive visualization at `graphify-out/GRAPH_TREE.html`)*
+
+### 4. Shadow-Trace Commands
 Wrap every shell command (like compiling, linting, or package installations) using `tracer.py` so mcp-memory-os can log metrics, track files, and intercept errors:
 ```bash
 python .agent/tools/tracer.py "npm install"
 ```
 
-### 4. Auto-Heal Failures
+### 5. Auto-Heal Failures
 If commands fail, run healing to analyze episodic tracebacks and auto-generate context-aware active hints:
 ```bash
 python uall.py /heal
 ```
 
-### 5. Run Quality & Security Gates
+### 6. Run Quality & Security Gates
 Validate your code changes before committing. This runs Semgrep security checks, Ruff formatting rules, and Pytest suites:
 ```bash
 python uall.py /verify
 ```
 
-### 6. Git-Checkpoint verified State
+### 7. Git-Checkpoint verified State
 Once `/verify` returns `VALID`, unlock and save your current progress with a Git-signed checkpoint commit:
 ```bash
 python uall.py /checkpoint "Initial auth implementation"

@@ -130,50 +130,35 @@ def uall_task(task_id: str, source: str = "linear") -> str:
 
 
 @mcp.tool()
-def uall_bootstrap() -> str:
-    """Bootstrap the current workspace with the mcp-memory-os (.agent/) structure and interfaces."""
-    plugin_root = Path(__file__).resolve().parent.parent
-    template_dir = plugin_root / "template"
-    if not template_dir.exists():
-        return f"Error: Template directory not found at {template_dir}"
+def uall_graphify(action: str = "extract", query: str = "") -> str:
+    """Run Graphifyy structural codebase operations.
     
-    target_dir = Path.cwd()
-    import shutil
-    try:
-        items = [".agent", "uall.py", ".cursorrules", ".clinerules", "README.md"]
-        deployed = []
-        for item in items:
-            src = template_dir / item
-            dst = target_dir / item
-            if not src.exists():
-                continue
-            if src.is_dir():
-                if dst.exists():
-                    shutil.rmtree(dst)
-                shutil.copytree(src, dst)
-            else:
-                shutil.copy2(src, dst)
-            deployed.append(item)
+    action: "extract" (headless AST mapping), "query" (BFS graph traversal),
+            "affected" (impact analysis), "tree" (D3 collapsible tree HTML),
+            "callflow" (Mermaid call-flow HTML)
+    query: the search phrase or symbol name for query/affected actions.
+    """
+    args = []
+    if action == "extract":
+        args = ["--extract"]
+    elif action == "query":
+        if not query:
+            return "Error: query parameter required for query action."
+        args = ["--query", query]
+    elif action == "affected":
+        if not query:
+            return "Error: query parameter required for affected action."
+        args = ["--affected", query]
+    elif action == "tree":
+        args = ["--tree"]
+    elif action == "callflow":
+        args = ["--callflow"]
+    else:
+        return f"Error: unknown action: {action}"
         
-        # Git init if needed
-        import subprocess
-        git_init_msg = ""
-        if not (target_dir / ".git").exists():
-            res = subprocess.run(["git", "init"], cwd=str(target_dir), capture_output=True, text=True)
-            if res.returncode == 0:
-                git_init_msg = " [git initialized]"
-            else:
-                git_init_msg = f" [git init failed: {res.stderr.strip()}]"
-        
-        # Initial memory index
-        index_script = target_dir / ".agent" / "tools" / "index_memory.py"
-        if index_script.exists():
-            subprocess.run([sys.executable, str(index_script)], cwd=str(target_dir), capture_output=True)
-        
-        return f"Success: Bootstrapped project at {target_dir} with {', '.join(deployed)}{git_init_msg}."
-    except Exception as e:
-        return f"Error bootstrapping project: {e}"
+    return run_tool("graphify_bridge.py", *args)
 
 
 if __name__ == "__main__":
     mcp.run()
+

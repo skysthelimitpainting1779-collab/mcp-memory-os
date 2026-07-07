@@ -129,5 +129,36 @@ def uall_task(task_id: str, source: str = "linear") -> str:
     return run_tool("task_bridge.py", task_id, source)
 
 
+@mcp.tool()
+def uall_graphify(action: str = "extract", query: str = "") -> str:
+    """Run Graphifyy structural codebase operations.
+    
+    action: "extract" (headless AST mapping), "query" (BFS graph traversal),
+            "affected" (impact analysis), "tree" (D3 collapsible tree HTML),
+            "callflow" (Mermaid call-flow HTML)
+    query: the search phrase or symbol name for query/affected actions.
+    """
+    args = []
+    if action == "extract":
+        args = ["--extract"]
+    elif action == "query":
+        if not query:
+            return "Error: query parameter required for query action."
+        args = ["--query", query]
+    elif action == "affected":
+        if not query:
+            return "Error: query parameter required for affected action."
+        args = ["--affected", query]
+    elif action == "tree":
+        args = ["--tree"]
+    elif action == "callflow":
+        args = ["--callflow"]
+    else:
+        return f"Error: unknown action: {action}"
+        
+    return run_tool("graphify_bridge.py", *args)
+
+
 if __name__ == "__main__":
     mcp.run()
+

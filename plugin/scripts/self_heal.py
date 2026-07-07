@@ -63,11 +63,50 @@ def self_heal() -> None:
     active_hints   = []
     proposed_hints = []
 
+    # Check for graphify package
+    HAS_GRAPHIFY = False
+    try:
+        import graphify
+        HAS_GRAPHIFY = True
+    except ImportError:
+        pass
+
+    def get_blast_radius(reason: str) -> str:
+        if not HAS_GRAPHIFY:
+            return ""
+        import re
+        import subprocess
+        words = re.findall(r'[a-zA-Z_][a-zA-Z0-9_\.]*', reason)
+        symbols = []
+        for w in words:
+            if len(w) > 4 and (w.endswith(".py") or "_" in w or w[0].isupper()):
+                symbols.append(w)
+        if not symbols:
+            return ""
+        affected_nodes = []
+        for sym in set(symbols):
+            cmd = [sys.executable, "-m", "graphify", "affected", sym, "--depth", "2"]
+            try:
+                res = subprocess.run(cmd, capture_output=True, text=True, cwd=str(ROOT))
+                if res.returncode == 0:
+                    for line in res.stdout.splitlines():
+                        if line.startswith("NODE "):
+                            name = line.split("[")[0].replace("NODE ", "").strip()
+                            if name not in affected_nodes and name != sym:
+                                affected_nodes.append(name)
+            except Exception:
+                pass
+        if affected_nodes:
+            return f"  **Impact Blast Radius**: `{', '.join(affected_nodes[:6])}`\n"
+        return ""
+
     for reason, count in counts.most_common(MAX_HINTS):
         cmd = command_map.get(reason, "unknown")
+        blast = get_blast_radius(reason)
         entry = (
             f"- **Issue** ({count}×): {reason}\n"
             f"  **Context**: `{cmd}`\n"
+            f"{blast}"
             f"  **Rule**: Investigate prerequisites before retrying this pattern.\n"
         )
         if count >= FAILURE_THRESHOLD:

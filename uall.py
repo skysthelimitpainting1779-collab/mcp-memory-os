@@ -88,13 +88,20 @@ def handle_command(cmd_input: str) -> None:
         _print_help()
         return
 
+    if cmd == "/graphify":
+        import shlex
+        script, _ = TOOL_MAP[cmd]
+        clean_args = shlex.split(args) if args else []
+        print(run_script(script, *clean_args))
+        return
+
     if cmd in TOOL_MAP:
         script, s_args = TOOL_MAP[cmd]
         # Filter out empty string args
         clean_args = [a for a in s_args if a != ""]
         print(run_script(script, *clean_args))
     else:
-        print(f"Unknown command: '{cmd}'. Run `python3 uall.py /help` for commands.")
+        print(f"Unknown command: '{cmd}'. Run `python uall.py /help` for commands.")
 
 
 def _print_status() -> None:

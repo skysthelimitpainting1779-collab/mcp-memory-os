@@ -22,6 +22,13 @@ AGENT = agent_dir(ROOT)
 GRAPH_ENTITIES   = AGENT / "memory" / "graph" / "entities.md"
 GRAPH_RELATIONS  = AGENT / "memory" / "graph" / "relationships.jsonl"
 
+HAS_GRAPHIFY = False
+try:
+    import graphify
+    HAS_GRAPHIFY = True
+except ImportError:
+    pass
+
 # Directories that should never be scanned
 SKIP_DIRS = {".agent", ".git", "__pycache__", "node_modules", ".next",
              "dist", "build", ".vercel", "coverage", ".pytest_cache", "venv", ".venv"}
@@ -131,18 +138,62 @@ class TemporalGraphEngine:
 
     def sync(self) -> None:
         scanned = 0
-        for target in self.scan_dirs:
-            target_path = self.root / target
-            if not target_path.exists():
-                continue
-            for fpath in target_path.rglob("*"):
-                if fpath.is_file() and not any(skip in fpath.parts for skip in SKIP_DIRS):
-                    self.scan_file(fpath)
-                    scanned += 1
+        use_fallback = True
+
+        if HAS_GRAPHIFY:
+            print("🚀 Graphifyy detected! Running deep AST/semantic extraction...")
+            try:
+                cmd = [sys.executable, "-m", "graphify", "extract", ".", "--no-cluster"]
+                subprocess.run(cmd, capture_output=True, text=True, cwd=str(self.root))
+                
+                graph_json_path = self.root / "graphify-out" / "graph.json"
+                if graph_json_path.exists():
+                    with open(graph_json_path, encoding="utf-8") as f:
+                        data = json.load(f)
+                    
+                    self.entities.clear()
+                    self.relations.clear()
+                    
+                    for node in data.get("nodes", []):
+                        node_id = node.get("id")
+                        if not node_id:
+                            continue
+                        self.entities[node_id] = {
+                            "id": node_id,
+                            "type": node.get("file_type", "symbol"),
+                            "name": node.get("label", ""),
+                            "source_file": node.get("source_file", ""),
+                            "source_location": node.get("source_location", ""),
+                        }
+                        
+                    for edge in data.get("edges", []):
+                        self.relations.append({
+                            "subject_id": edge.get("source", ""),
+                            "predicate": edge.get("relation", "connects"),
+                            "object_id": edge.get("target", ""),
+                        })
+                    
+                    scanned = len(set(node.get("source_file") for node in data.get("nodes", []) if node.get("source_file")))
+                    use_fallback = False
+                    print("✅ Graphifyy extraction parsed successfully.")
+                else:
+                    print("⚠️  Graphifyy output graph.json not found. Falling back to local scanner...")
+            except Exception as e:
+                print(f"⚠️  Graphifyy extraction failed: {e}. Falling back to local scanner...")
+
+        if use_fallback:
+            for target in self.scan_dirs:
+                target_path = self.root / target
+                if not target_path.exists():
+                    continue
+                for fpath in target_path.rglob("*"):
+                    if fpath.is_file() and not any(skip in fpath.parts for skip in SKIP_DIRS):
+                        self.scan_file(fpath)
+                        scanned += 1
 
         # Write entities
         GRAPH_ENTITIES.parent.mkdir(parents=True, exist_ok=True)
-        with open(GRAPH_ENTITIES, "w") as f:
+        with open(GRAPH_ENTITIES, "w", encoding="utf-8") as f:
             f.write("# Temporal Knowledge Graph: Entities\n\n")
             for eid, data in self.entities.items():
                 f.write(f"---\n{json.dumps(data, indent=2)}\n---\n\n")
@@ -156,13 +207,16 @@ class TemporalGraphEngine:
                 seen.add(key)
                 unique_rels.append(rel)
 
-        with open(GRAPH_RELATIONS, "w") as f:
+        with open(GRAPH_RELATIONS, "w", encoding="utf-8") as f:
             for rel in unique_rels:
                 f.write(json.dumps(rel) + "\n")
 
         print(f"✅ Graph Sync complete.")
         print(f"   {len(self.entities)} entities | {len(unique_rels)} relationships | {scanned} files scanned")
-        print(f"   Scan roots: {[d for d in self.scan_dirs if (self.root / d).exists()]}")
+        if use_fallback:
+            print(f"   Scan roots: {[d for d in self.scan_dirs if (self.root / d).exists()]}")
+        else:
+            print(f"   Scan source: parsed from Graphifyy graph.json")
 
 
 def main():
