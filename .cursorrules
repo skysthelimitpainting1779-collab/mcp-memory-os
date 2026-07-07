@@ -1,8 +1,9 @@
-# Cursor Rules for UALL
-# This file tells Cursor to prioritize UALL memory and tools.
+# Cursor Rules for UALL & mcp-memory-os
 
-- Always run `python3 .agent/tools/recall.py --task "<your_current_task>"` at the start of a session.
-- Before editing files in `.agent/`, verify the action via `python3 .agent/tools/gate.py write <file_path>`.
-- Log all major tool outputs and decisions to `.agent/memory/episodic/`.
-- Respect the boundaries defined in `.agent/GOVERNANCE.md`.
-- Use `/checkpoint` (via `python3 uall.py /checkpoint "<msg>"`) after significant milestones.
+- **SOPs & Profile:** At startup, read `.agent/AGENTS.md` to load active profile guidelines and commands.
+- **Memory Retrieval:** Always run `python uall.py /recall "<task_keywords>"` at the start of a session or task to retrieve memory context.
+- **Workspace Specs:** Refer to `.agent/spec/design.md` for codebase design and `.agent/spec/tasks/` for active ticket instructions.
+- **Local Playbook:** Consult `.agent/PLAYBOOK.md` to check graduated coding lessons and avoid repeating past errors.
+- **Safety Gate:** Before writing files, verify the action via `python .agent/tools/gate.py write <file_path>` and respect boundaries in `.agent/GOVERNANCE.md`.
+- **Traced Execution:** Execute all terminal commands wrapped in `python .agent/tools/tracer.py "<command>"` to capture episodic metrics.
+- **Git Checkpoints:** Run `python uall.py /checkpoint "<message>"` only after `/verify` pass.

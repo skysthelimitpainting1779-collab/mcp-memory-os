@@ -13,6 +13,56 @@ from pathlib import Path
 SOURCE_DIR = Path(__file__).parent / "plugin" / "template"
 
 
+def post_deploy_patch(target_dir: Path) -> None:
+    """
+    Rewrite IDE instruction files (.cursorrules, .clinerules, CLAUDE.md,
+    AGENTS.md) so they reference the *actual* target project path and
+    project name rather than the template's hardcoded mcp-memory-os values.
+    """
+    abs_path = str(target_dir.resolve())
+    project_name = target_dir.resolve().name
+
+    # ── .cursorrules ────────────────────────────────────────────────────────
+    cursorrules = target_dir / ".cursorrules"
+    cursorrules.write_text(
+        f"# Cursor Rules for UALL & {project_name}\n\n"
+        f"- **SOPs & Profile:** At startup, read `.agent/AGENTS.md` to load active profile guidelines and commands.\n"
+        f"- **Memory Retrieval:** Always run `python uall.py /recall \"<task_keywords>\"` at the start of a session or task to retrieve memory context.\n"
+        f"- **Workspace Specs:** Refer to `.agent/spec/design.md` for codebase design and `.agent/spec/tasks/` for active ticket instructions.\n"
+        f"- **Local Playbook:** Consult `.agent/PLAYBOOK.md` to check graduated coding lessons and avoid repeating past errors.\n"
+        f"- **Safety Gate:** Before writing files, verify the action via `python .agent/tools/gate.py write <file_path>` and respect boundaries in `.agent/GOVERNANCE.md`.\n"
+        f"- **Traced Execution:** Execute all terminal commands wrapped in `python .agent/tools/tracer.py \"<command>\"` to capture episodic metrics.\n"
+        f"- **Git Checkpoints:** Run `python uall.py /checkpoint \"<message>\"` only after `/verify` pass.\n",
+        encoding="utf-8",
+    )
+
+    # ── .clinerules ─────────────────────────────────────────────────────────
+    clinerules = target_dir / ".clinerules"
+    clinerules.write_text(
+        f"# Roo Code / Cline Rules for UALL & {project_name}\n\n"
+        "<system_instructions>\n"
+        f"You are an agent operating within a UALL-enabled repository: {project_name}.\n\n"
+        "1. **Active SOP Rules**: At startup, read `.agent/AGENTS.md` to load active profile guidelines and commands.\n"
+        "2. **Memory Retrieval**: Your first action for any task MUST be to run `python uall.py /recall \"<task_keywords>\"` to fetch grounded context.\n"
+        "3. **Workspace Specs**: Reference `.agent/spec/design.md` for design and `.agent/spec/tasks/` for active ticket instructions.\n"
+        "4. **Local Playbook**: Consult `.agent/PLAYBOOK.md` to check graduated coding lessons and avoid repeating past errors.\n"
+        "5. **Safety Gate**: Before writing files, verify the action via `python .agent/tools/gate.py write <file_path>` and respect boundaries in `.agent/GOVERNANCE.md`.\n"
+        "6. **Command Tracing**: Execute all terminal commands wrapped in `python .agent/tools/tracer.py \"<command>\"` to capture episodic metrics.\n"
+        "7. **Git Checkpoints**: Persist milestones with `python uall.py /checkpoint \"<message>\"` (only after `/verify` pass).\n"
+        "</system_instructions>\n",
+        encoding="utf-8",
+    )
+
+    # ── .agent/AGENTS.md — replace {PROJECT_NAME} placeholder ──────────────
+    agents_md = target_dir / ".agent" / "AGENTS.md"
+    if agents_md.exists():
+        content = agents_md.read_text(encoding="utf-8")
+        content = content.replace("{PROJECT_NAME}", project_name)
+        agents_md.write_text(content, encoding="utf-8")
+
+    print(f"   [OK] IDE instruction files patched for '{project_name}' ({abs_path})")
+
+
 def deploy(target_dir: Path) -> None:
     print(f"🚀 UALL MASTER INSTALLER: Deploying to '{target_dir}'...")
     target_dir.mkdir(parents=True, exist_ok=True)
@@ -38,6 +88,9 @@ def deploy(target_dir: Path) -> None:
         print(f"  [+] {item}")
 
     print("✅ Framework core deployed.")
+
+    # Patch IDE rules files with correct project path/name
+    post_deploy_patch(target_dir)
 
     # Git init if needed
     if not (target_dir / ".git").exists():
@@ -87,3 +140,4 @@ def deploy(target_dir: Path) -> None:
 if __name__ == "__main__":
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
     deploy(target)
+
