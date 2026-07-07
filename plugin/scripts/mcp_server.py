@@ -131,7 +131,7 @@ def uall_task(task_id: str, source: str = "linear") -> str:
 
 @mcp.tool()
 def uall_bootstrap() -> str:
-    """Bootstrap the current workspace with the AgentOS (.agent/) structure and interfaces."""
+    """Bootstrap the current workspace with the mcp-memory-os (.agent/) structure and interfaces."""
     plugin_root = Path(__file__).resolve().parent.parent
     template_dir = plugin_root / "template"
     if not template_dir.exists():

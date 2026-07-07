@@ -1,10 +1,10 @@
-# 🧠 AgentOS — The Portable Memory, Security & Self-Healing Layer for AI Agents
+# 🧠 mcp-memory-os — The Portable Memory, Security & Self-Healing Layer for AI Agents
 
 [![GitHub license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org)
 [![Agent Compatibility](https://img.shields.io/badge/agents-Cursor%20%7C%20Claude%20%7C%20Custom-orange)](https://github.com)
 
-**Stop building stateless agents.** Turn Cursor, Claude Desktop, and custom agent scripts into production-grade developers. **AgentOS** (powered by UALL) is a lightweight, zero-dependency engine you can drop into any repository to instantly equip your AI developer with long-term memory, execution guardrails, and self-healing loops.
+**Stop building stateless agents.** Turn Cursor, Claude Desktop, and custom agent scripts into production-grade developers. **mcp-memory-os** (powered by UALL) is a lightweight, zero-dependency engine you can drop into any repository to instantly equip your AI developer with long-term memory, execution guardrails, and self-healing loops.
 
 ```
                   ┌────────────────────────────────────────┐
@@ -12,7 +12,7 @@
                   └──────────────────┬─────────────────────┘
                                      │ (MCP / CLI)
                   ┌──────────────────▼─────────────────────┐
-                  │                AgentOS                 │
+                  │                mcp-memory-os                 │
                   └──────┬───────────┬──────────────┬──────┘
                          │           │              │
            ┌─────────────▼─────┐┌────▼────────┐┌────▼─────────────┐
@@ -25,7 +25,7 @@
 
 ## ⚡ The Value Proposition
 
-| Feature | Standard AI Agent | AgentOS-Empowered Agent |
+| Feature | Standard AI Agent | mcp-memory-os-Empowered Agent |
 | :--- | :--- | :--- |
 | **Context Retention** | Single-session, forgets past file paths & fixes | Hybrid FTS5 + Entity Relationship Knowledge Graph |
 | **Execution Safety** | Runs arbitrary commands blindly (dangerous) | Pre-command gatekeeper matching your security policy |
@@ -36,7 +36,7 @@
 
 ## 🛠️ The Agentic Loop
 
-AgentOS organizes the agent's behavior into a structured, continuous reinforcement loop:
+mcp-memory-os organizes the agent's behavior into a structured, continuous reinforcement loop:
 
 ```mermaid
 graph TD
@@ -70,11 +70,11 @@ Once installed:
 ---
 
 ### 2. Bootstrap your Project (Deploying the Template)
-To run AgentOS inside any codebase workspace:
+To run mcp-memory-os inside any codebase workspace:
 
 * **Option A: Run the MCP Server Tool (Easiest)**
   If you have the Antigravity plugin installed and connected, your agent can bootstrap the project directly by calling the `uall_bootstrap` tool. Just tell your agent:
-  > *"Please bootstrap this project with AgentOS"*
+  > *"Please bootstrap this project with mcp-memory-os"*
 * **Option B: Run the Bootstrap Script**
   Copy `uall_bootstrap.py` and `uall.py` to your target project root and run:
   ```bash
@@ -90,7 +90,7 @@ To run AgentOS inside any codebase workspace:
 ---
 
 ### 3. Setup the IDE Integration (MCP Server)
-AgentOS exposes a local Model Context Protocol (MCP) server so Cursor, Claude Desktop, or VSCode can access its tools natively. 
+mcp-memory-os exposes a local Model Context Protocol (MCP) server so Cursor, Claude Desktop, or VSCode can access its tools natively. 
 
 Add this to your IDE's MCP settings:
 ```json
@@ -125,7 +125,7 @@ python uall.py /recall "JWT auth verification logic"
 ```
 
 ### 3. Shadow-Trace Commands
-Wrap every shell command (like compiling, linting, or package installations) using `tracer.py` so AgentOS can log metrics, track files, and intercept errors:
+Wrap every shell command (like compiling, linting, or package installations) using `tracer.py` so mcp-memory-os can log metrics, track files, and intercept errors:
 ```bash
 python .agent/tools/tracer.py "npm install"
 ```
@@ -153,7 +153,7 @@ python uall.py /checkpoint "Initial auth implementation"
 
 ## 📦 Architecture & Directory Layout
 
-AgentOS operates entirely locally within a portable `.agent/` directory:
+mcp-memory-os operates entirely locally within a portable `.agent/` directory:
 
 ```
 .agent/
@@ -182,11 +182,11 @@ AgentOS operates entirely locally within a portable `.agent/` directory:
 ## 💎 Key Features
 
 ### 🧠 1. Hybrid Semantic & Graph Memory
-Standard search is not enough. AgentOS combines **SQLite FTS5 full-text indexing** with an **Entity-Relationship Knowledge Graph** to trace code dependencies, previous refactorings, and file mappings.
+Standard search is not enough. mcp-memory-os combines **SQLite FTS5 full-text indexing** with an **Entity-Relationship Knowledge Graph** to trace code dependencies, previous refactorings, and file mappings.
 * `/recall <query>` queries both lexical indices and code relationships to construct a hyper-relevant context.
 
 ### 🛡️ 2. Pre-Command Governance
-Protect your environment. When your agent attempts to execute a terminal command (e.g., `git`, `docker`, `rm`), the AgentOS pre-tool hook interceptor validates the command against [.agent/GOVERNANCE.md](file:///C:/Users/Johnny%20Cage/Projects/UALL-Antigravity/.agent/GOVERNANCE.md).
+Protect your environment. When your agent attempts to execute a terminal command (e.g., `git`, `docker`, `rm`), the mcp-memory-os pre-tool hook interceptor validates the command against [.agent/GOVERNANCE.md](file:///C:/Users/Johnny%20Cage/Projects/UALL-Antigravity/.agent/GOVERNANCE.md).
 * Auto-approves safe commands (Tier 1).
 * Prompts or logs medium-risk activities (Tier 2).
 * Blocks high-risk or unauthorized commands (Tier 3) until approved.
@@ -203,7 +203,7 @@ Never let an agent break your code.
 ---
 
 > [!IMPORTANT]
-> **AgentOS** is completely open-source, local-first, and contains no external API dependencies. All memory, database indices, and event logs are stored directly in your codebase's `.agent/` folder.
+> **mcp-memory-os** is completely open-source, local-first, and contains no external API dependencies. All memory, database indices, and event logs are stored directly in your codebase's `.agent/` folder.
 
 ---
 

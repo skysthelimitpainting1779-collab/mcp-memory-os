@@ -1,6 +1,6 @@
-# 🔌 AgentOS Model Context Protocol (MCP) Server Setup
+# 🔌 mcp-memory-os Model Context Protocol (MCP) Server Setup
 
-Equip Claude Desktop, Cursor, VSCode, or any MCP-compatible IDE with **AgentOS** tools natively. By exposing the agent's memory and governance features as MCP tools, the agent can search its own database, evaluate safety policies, and auto-heal tracebacks in real-time.
+Equip Claude Desktop, Cursor, VSCode, or any MCP-compatible IDE with **mcp-memory-os** tools natively. By exposing the agent's memory and governance features as MCP tools, the agent can search its own database, evaluate safety policies, and auto-heal tracebacks in real-time.
 
 ---
 
@@ -52,7 +52,7 @@ Once connected, your AI assistant will gain access to the following capabilities
 
 | Tool Name | CLI Equivalent | Description |
 | :--- | :--- | :--- |
-| `uall_bootstrap` | `uall_bootstrap.py` | Bootstraps the active workspace with the AgentOS structure and stubs |
+| `uall_bootstrap` | `uall_bootstrap.py` | Bootstraps the active workspace with the mcp-memory-os structure and stubs |
 | `uall_recall` | `/recall` | Queries FTS5 full-text index & knowledge graph context |
 | `uall_status` | `/status` | Fetches agent brain health metrics, log counts, & status |
 | `uall_gate` | `gate.py` | Validates command execution requests against local GOVERNANCE.md |

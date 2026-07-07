@@ -1,11 +1,11 @@
-# 👥 AgentOS Roles & SOP Guidelines
+# 👥 mcp-memory-os Roles & SOP Guidelines
 
-This project utilizes **AgentOS** (powered by UALL) to maintain structural integrity, long-term memory, and codebase safety.
+This project utilizes **mcp-memory-os** (powered by UALL) to maintain structural integrity, long-term memory, and codebase safety.
 
 ---
 
 ## 🤖 Active Agent Profile
-- **System Version:** AgentOS v2.0
+- **System Version:** mcp-memory-os v2.0
 - **Operational Mode:** Local-first, git-backed learning loop
 
 ---

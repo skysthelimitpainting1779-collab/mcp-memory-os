@@ -1,6 +1,6 @@
-# Contributing to AgentOS
+# Contributing to mcp-memory-os
 
-Thank you for your interest in contributing to **AgentOS**! Contributions from the developer community help make this a more robust and capable agentic tool.
+Thank you for your interest in contributing to **mcp-memory-os**! Contributions from the developer community help make this a more robust and capable agentic tool.
 
 ---
 
@@ -14,7 +14,7 @@ Thank you for your interest in contributing to **AgentOS**! Contributions from t
 
 ## 🛠️ Local Development & Testing
 
-To set up a local workspace for developing or testing AgentOS:
+To set up a local workspace for developing or testing mcp-memory-os:
 
 1. **Fork and Clone** this repository.
 2. **Create a local virtual environment:**
