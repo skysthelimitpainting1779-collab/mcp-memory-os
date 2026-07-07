@@ -1,18 +1,36 @@
-# Agent Roles
+# 👥 mcp-memory-os Roles & SOP Guidelines
 
-| Role       | Responsibilities |
-| :--------- | :--------------- |
-| Architect  | Design decisions, ADRs, spec updates |
-| Developer  | Feature implementation, tests |
-| SRE        | Deployments, monitoring, incident response |
-| Auditor    | Skill review via `/audit`, security sign-off |
+This project utilizes **mcp-memory-os** (powered by UALL) to maintain structural integrity, long-term memory, and codebase safety.
 
-## SOP Quick Reference
+---
 
-1. `/task <id>` — Link to Linear/GitHub ticket
-2. `/recall "<description>"` — Surface relevant memory
-3. Execute via `python3 .agent/tools/tracer.py "<cmd>"` — Capture telemetry
-4. `/dream` — Mine patterns from logs
-5. `/verify` — Run semgrep + ruff + pytest
-6. `/checkpoint "<msg>"` — Persist verified state
-7. `/report` — Generate PR/Linear summary
+## 🤖 Active Agent Profile
+- **System Version:** mcp-memory-os v2.0
+- **Operational Mode:** Local-first, git-backed learning loop
+
+---
+
+## 📋 Core Agent Commands
+
+Use these commands via the `uall.py` interface inside the project:
+* `/status` — Verify the health of the agent's memory index and active task.
+* `/task <id>` — Link the workspace to a specific task identifier (e.g., Jira, Linear, or GitHub issues).
+* `/recall <desc>` — Query past lessons, context, and structural codebase mappings.
+* `/graphify [<args>]` — Parse codebase structure, run BFS/DFS graph queries, or export visualizations via Graphifyy.
+* `/verify` — Run security scans (Semgrep), code linter (Ruff), and test suites (pytest).
+* `/checkpoint "<msg>"` — Commit current progress to Git (unlocked only after a successful `/verify`).
+
+---
+
+## 🛡️ Operational Guidelines
+
+To ensure consistency, safety, and learning, the agent must adhere to the following rules:
+
+1. **Memory First:** Always run `/recall` before starting a new task or editing complex code blocks to pull historical context.
+2. **Command Tracing:** Execute any command-line tools (e.g., `npm install`, `pytest`, `cargo build`) wrapped in `tracer.py`:
+   ```bash
+   python .agent/tools/tracer.py "<command>"
+   ```
+   This captures the command telemetry and logs execution metrics into the episodic brain.
+3. **Verify Before Checkpoint:** Never attempt to checkpoint the repository state without a successful `/verify` pass.
+4. **No Kernel Modification:** Do not modify core files in `.agent/tools/` or [.agent/GOVERNANCE.md](file:///C:/Users/Johnny%20Cage/Projects/mcp-memory-os/.agent/GOVERNANCE.md) without human override approval.

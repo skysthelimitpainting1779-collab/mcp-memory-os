@@ -16,6 +16,7 @@ Use these commands via the `uall.py` interface inside the project:
 * `/status` — Verify the health of the agent's memory index and active task.
 * `/task <id>` — Link the workspace to a specific task identifier (e.g., Jira, Linear, or GitHub issues).
 * `/recall <desc>` — Query past lessons, context, and structural codebase mappings.
+* `/graphify [<args>]` — Parse codebase structure, run BFS/DFS graph queries, or export visualizations via Graphifyy.
 * `/verify` — Run security scans (Semgrep), code linter (Ruff), and test suites (pytest).
 * `/checkpoint "<msg>"` — Commit current progress to Git (unlocked only after a successful `/verify`).
 
@@ -32,4 +33,4 @@ To ensure consistency, safety, and learning, the agent must adhere to the follow
    ```
    This captures the command telemetry and logs execution metrics into the episodic brain.
 3. **Verify Before Checkpoint:** Never attempt to checkpoint the repository state without a successful `/verify` pass.
-4. **No Kernel Modification:** Do not modify core files in `.agent/tools/` or [.agent/GOVERNANCE.md](file:///C:/Users/Johnny%20Cage/Projects/UALL-Antigravity/.agent/GOVERNANCE.md) without human override approval.
+4. **No Kernel Modification:** Do not modify core files in `.agent/tools/` or [.agent/GOVERNANCE.md](file:///C:/Users/Johnny%20Cage/Projects/mcp-memory-os/.agent/GOVERNANCE.md) without human override approval.
