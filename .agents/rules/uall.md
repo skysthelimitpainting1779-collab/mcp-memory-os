@@ -1,4 +1,9 @@
-# Cursor Rules — mcp-memory-os (UALL v3)
+---
+trigger: always_on
+description: UALL memory retrieval, safety gates, and verification workflow for mcp-memory-os.
+---
+
+## UALL — mcp-memory-os
 
 UALL STARTUP SEQUENCE — run these steps before writing ANY code:
 1. python uall.py /recall "<describe your task in 3-5 words>"
@@ -12,8 +17,3 @@ DURING WORK:
 BEFORE COMMITTING:
 - python uall.py /verify  (lint + security + tests must pass)
 - python uall.py /checkpoint "<message>"  (only after green /verify)
-
-# Graphify graph queries
-- For architecture questions: `graphify query "<question>"`
-- For call paths: `graphify path "<A>" "<B>"`
-- After editing code: `graphify update .`

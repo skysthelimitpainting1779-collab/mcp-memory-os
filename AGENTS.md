@@ -1,3 +1,20 @@
+# mcp-memory-os
+
+## Project Context
+<!-- Fill in: what this project does, key URLs, team conventions -->
+
+## Setup
+```bash
+python uall.py /status    # verify memory index
+python uall.py /verify    # lint + security + tests
+```
+
+## Never Modify
+- `.agent/tools/` (UALL kernel — use gate.py)
+- `.agent/GOVERNANCE.md` (requires human approval)
+
+---
+
 # 👥 mcp-memory-os Roles & SOP Guidelines
 
 This project utilizes **mcp-memory-os** (powered by UALL) to maintain structural integrity, long-term memory, and codebase safety.

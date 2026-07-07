@@ -1,4 +1,11 @@
-# Cursor Rules — mcp-memory-os (UALL v3)
+# mcp-memory-os
+
+## Stack & Setup
+<!-- Fill in: stack, test command, dev server command -->
+- Test: `python uall.py /verify`
+- Status: `python uall.py /status`
+
+## Agent Rules
 
 UALL STARTUP SEQUENCE — run these steps before writing ANY code:
 1. python uall.py /recall "<describe your task in 3-5 words>"
@@ -13,7 +20,7 @@ BEFORE COMMITTING:
 - python uall.py /verify  (lint + security + tests must pass)
 - python uall.py /checkpoint "<message>"  (only after green /verify)
 
-# Graphify graph queries
-- For architecture questions: `graphify query "<question>"`
-- For call paths: `graphify path "<A>" "<B>"`
-- After editing code: `graphify update .`
+## Graphify Knowledge Graph
+- Query: `graphify query "<question>"`
+- Path tracing: `graphify path "<A>" "<B>"`
+- After edits: `graphify update .`

@@ -91,46 +91,57 @@ def bootstrap() -> None:
 
 
 def setup_graphify() -> None:
-    print("🕸️ Checking Graphifyy integration...")
-    import subprocess
-    import sys
+    """Install graphify only if not present; prefer uv over pip. Then wire IDE integrations."""
+    import shutil as _shutil
 
-    # 1. Install/upgrade graphifyy package if needed
+    print("Checking Graphifyy integration...")
+
+    # 1. Check if already installed
     try:
-        import graphify
-        print("✅ Graphifyy Python package is already installed.")
-    except ImportError:
-        print("📥 Graphifyy not found. Installing via pip...")
-        try:
-            subprocess.run([sys.executable, "-m", "pip", "install", "graphifyy"], capture_output=True)
-            print("✅ Graphifyy Python package installed successfully.")
-        except Exception as e:
-            print(f"⚠️ Failed to install graphifyy package: {e}")
+        from importlib.metadata import version as _pkg_ver
+        ver = _pkg_ver("graphifyy")
+        print(f"   [OK] graphifyy {ver} already installed — skipping install")
+    except Exception:
+        print("   [..] graphifyy not found — installing...")
+        if _shutil.which("uv"):
+            cmd = ["uv", "pip", "install", "graphifyy"]
+            installer = "uv"
+        else:
+            cmd = [sys.executable, "-m", "pip", "install", "graphifyy"]
+            installer = "pip"
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0:
+            print(f"   [OK] graphifyy installed via {installer}")
+        else:
+            print(f"   [WARN] graphifyy install failed: {result.stderr[:200]}")
             return
 
-    # 2. Run graphify install to update skills
+    # 2. Run graphify install (updates skills/references)
     try:
-        print("🔧 Running graphify install...")
-        subprocess.run([sys.executable, "-m", "graphify", "install"], capture_output=True)
-        print("✅ Graphifyy skills and references updated.")
+        subprocess.run(
+            [sys.executable, "-m", "graphify", "install"],
+            capture_output=True, text=True
+        )
+        print("   [OK] graphify skills updated")
     except Exception as e:
-        print(f"⚠️ Failed to run graphify install: {e}")
+        print(f"   [WARN] graphify install failed: {e}")
 
-    # 3. Setup hooks and IDE rules
-    try:
-        print("🔗 Installing Git hooks...")
-        subprocess.run([sys.executable, "-m", "graphify", "hook", "install"], capture_output=True)
-        print("💻 Registering Cursor rules...")
-        subprocess.run([sys.executable, "-m", "graphify", "cursor", "install"], capture_output=True)
-        print("🤖 Registering Claude Code configs...")
-        subprocess.run([sys.executable, "-m", "graphify", "claude", "install"], capture_output=True)
-        print("🎯 Registering Google Antigravity configs...")
-        subprocess.run([sys.executable, "-m", "graphify", "antigravity", "install"], capture_output=True)
-        print("✅ Graphifyy Git hooks and IDE rules configured successfully.")
-    except Exception as e:
-        print(f"⚠️ Failed to configure hooks/IDE rules: {e}")
+    # 3. Wire IDE integrations
+    for subcmd, label in [
+        (["hook", "install"], "git hooks"),
+        (["cursor", "install"], "Cursor"),
+        (["claude", "install"], "Claude"),
+        (["antigravity", "install"], "Antigravity"),
+    ]:
+        try:
+            subprocess.run(
+                [sys.executable, "-m", "graphify"] + subcmd,
+                capture_output=True, text=True
+            )
+        except Exception:
+            pass
+    print("   [OK] Graphifyy IDE integrations configured")
 
 
 if __name__ == "__main__":
     bootstrap()
-

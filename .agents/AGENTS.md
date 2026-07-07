@@ -1,4 +1,13 @@
-# Cursor Rules — mcp-memory-os (UALL v3)
+# mcp-memory-os — Agent Profile
+
+This project uses **mcp-memory-os (UALL v3)** for persistent memory,
+structured knowledge graphs (Graphifyy), and governed execution.
+
+## Roles
+- **AI Agent:** Implements features, fixes bugs, writes tests
+- **Human:** Reviews checkpoints, approves Tier-3 actions, fills spec files
+
+## Required Startup
 
 UALL STARTUP SEQUENCE — run these steps before writing ANY code:
 1. python uall.py /recall "<describe your task in 3-5 words>"
@@ -13,7 +22,11 @@ BEFORE COMMITTING:
 - python uall.py /verify  (lint + security + tests must pass)
 - python uall.py /checkpoint "<message>"  (only after green /verify)
 
-# Graphify graph queries
-- For architecture questions: `graphify query "<question>"`
-- For call paths: `graphify path "<A>" "<B>"`
-- After editing code: `graphify update .`
+## Key Files
+| File | Purpose |
+|------|---------|
+| `.agent/spec/design.md` | Architecture, stack, constraints |
+| `.agent/spec/tasks/<id>.json` | Active ticket scope |
+| `.agent/PLAYBOOK.md` | Graduated codebase lessons |
+| `.agent/GOVERNANCE.md` | Risk tiers, restricted files |
+| `graphify-out/graph.json` | Live code knowledge graph |

@@ -1,0 +1,5 @@
+# Aider configuration — UALL
+read:
+  - CONVENTIONS.md
+  - .agent/spec/design.md
+  - .agent/PLAYBOOK.md
