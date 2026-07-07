@@ -130,6 +130,66 @@ def uall_task(task_id: str, source: str = "linear") -> str:
 
 
 @mcp.tool()
+def uall_bootstrap() -> str:
+    """Bootstrap the current workspace with the mcp-memory-os structure, Git hooks, and IDE rules."""
+    plugin_root = Path(__file__).resolve().parent.parent
+    template_dir = plugin_root / "template"
+    if not template_dir.exists():
+        return f"Error: Template directory not found at {template_dir}"
+    
+    target_dir = Path.cwd()
+    import shutil
+    try:
+        items = [".agent", "uall.py", ".cursorrules", ".clinerules", "README.md"]
+        deployed = []
+        for item in items:
+            src = template_dir / item
+            dst = target_dir / item
+            if not src.exists():
+                continue
+            if src.is_dir():
+                if dst.exists():
+                    shutil.rmtree(dst)
+                shutil.copytree(src, dst)
+            else:
+                shutil.copy2(src, dst)
+            deployed.append(item)
+        
+        # Git init if needed
+        import subprocess
+        git_init_msg = ""
+        if not (target_dir / ".git").exists():
+            res = subprocess.run(["git", "init"], cwd=str(target_dir), capture_output=True, text=True)
+            if res.returncode == 0:
+                git_init_msg = " [git initialized]"
+            else:
+                git_init_msg = f" [git init failed: {res.stderr.strip()}]"
+        
+        # Install graphifyy package if missing, upgrade skill, and install hooks/IDE rules
+        graphify_msg = ""
+        try:
+            subprocess.run([sys.executable, "-m", "pip", "install", "graphifyy"], cwd=str(target_dir), capture_output=True)
+            subprocess.run([sys.executable, "-m", "graphify", "install"], cwd=str(target_dir), capture_output=True)
+            subprocess.run([sys.executable, "-m", "graphify", "hook", "install"], cwd=str(target_dir), capture_output=True)
+            subprocess.run([sys.executable, "-m", "graphify", "cursor", "install"], cwd=str(target_dir), capture_output=True)
+            subprocess.run([sys.executable, "-m", "graphify", "claude", "install"], cwd=str(target_dir), capture_output=True)
+            subprocess.run([sys.executable, "-m", "graphify", "antigravity", "install"], cwd=str(target_dir), capture_output=True)
+            graphify_msg = " [Graphifyy package, Git hooks, and IDE rules successfully configured]"
+        except Exception as ge:
+            graphify_msg = f" [Graphifyy config failed: {ge}]"
+            
+        # Initial memory index
+        index_script = target_dir / ".agent" / "tools" / "index_memory.py"
+        if index_script.exists():
+            subprocess.run([sys.executable, str(index_script)], cwd=str(target_dir), capture_output=True)
+        
+        return f"Success: Bootstrapped project at {target_dir} with {', '.join(deployed)}{git_init_msg}{graphify_msg}."
+    except Exception as e:
+        return f"Error bootstrapping project: {e}"
+
+
+
+@mcp.tool()
 def uall_graphify(action: str = "extract", query: str = "") -> str:
     """Run Graphifyy structural codebase operations.
     

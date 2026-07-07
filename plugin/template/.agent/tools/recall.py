@@ -120,6 +120,50 @@ def get_active_task_context() -> str | None:
             pass
     return f"Active Task: {task_id}"
 
+def get_global_graph_context(task_query: str) -> list[str]:
+    HAS_GRAPHIFY = False
+    try:
+        import graphify
+        HAS_GRAPHIFY = True
+    except ImportError:
+        pass
+
+    if not HAS_GRAPHIFY:
+        return []
+
+    import subprocess
+    global_path = None
+    try:
+        res = subprocess.run(
+            [sys.executable, "-m", "graphify", "global", "path"],
+            capture_output=True, text=True, timeout=5
+        )
+        if res.returncode == 0:
+            lines = res.stdout.strip().splitlines()
+            p = Path(lines[-1].strip())
+            if p.exists():
+                global_path = p
+    except Exception:
+        pass
+
+    if global_path:
+        cmd = [sys.executable, "-m", "graphify", "query", task_query, "--graph", str(global_path), "--budget", "1000"]
+        try:
+            res = subprocess.run(cmd, capture_output=True, text=True, cwd=str(ROOT))
+            if res.returncode == 0:
+                lines = res.stdout.strip().splitlines()
+                paths = []
+                for line in lines:
+                    line = line.strip()
+                    if line.startswith("EDGE "):
+                        clean = line.replace("EDGE ", "").split("[")[0].strip()
+                        paths.append(clean)
+                if paths:
+                    return paths[:8]
+        except Exception:
+            pass
+    return []
+
 
 def main():
     parser = argparse.ArgumentParser(description="UALL Recall — Hybrid Memory Search")
@@ -148,6 +192,13 @@ def main():
     if graph:
         print("\n🕸️  [GRAPH RELATIONSHIPS]")
         for g in graph:
+            print(f"  {g}")
+
+    # 3b. Global Graph context — cross-project knowledge
+    global_graph = get_global_graph_context(args.task)
+    if global_graph:
+        print("\n🌐 [GLOBAL RELATIONSHIPS — CROSS-PROJECT]")
+        for g in global_graph:
             print(f"  {g}")
 
     # 4. FTS5 lexical search

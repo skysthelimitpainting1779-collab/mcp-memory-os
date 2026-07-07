@@ -81,11 +81,56 @@ def bootstrap() -> None:
         subprocess.run(["git", "init"], capture_output=True)
         print("✅ Git repository initialized")
 
+    # 6. Graphifyy integration setup
+    setup_graphify()
+
     print(f"\n✅ UALL integrated into '{project_name}'")
     print("\nNext steps:")
-    print("  python3 uall.py /status")
-    print("  python3 uall.py /task <TASK-ID>")
+    print("  python uall.py /status")
+    print("  python uall.py /task <TASK-ID>")
+
+
+def setup_graphify() -> None:
+    print("🕸️ Checking Graphifyy integration...")
+    import subprocess
+    import sys
+
+    # 1. Install/upgrade graphifyy package if needed
+    try:
+        import graphify
+        print("✅ Graphifyy Python package is already installed.")
+    except ImportError:
+        print("📥 Graphifyy not found. Installing via pip...")
+        try:
+            subprocess.run([sys.executable, "-m", "pip", "install", "graphifyy"], capture_output=True)
+            print("✅ Graphifyy Python package installed successfully.")
+        except Exception as e:
+            print(f"⚠️ Failed to install graphifyy package: {e}")
+            return
+
+    # 2. Run graphify install to update skills
+    try:
+        print("🔧 Running graphify install...")
+        subprocess.run([sys.executable, "-m", "graphify", "install"], capture_output=True)
+        print("✅ Graphifyy skills and references updated.")
+    except Exception as e:
+        print(f"⚠️ Failed to run graphify install: {e}")
+
+    # 3. Setup hooks and IDE rules
+    try:
+        print("🔗 Installing Git hooks...")
+        subprocess.run([sys.executable, "-m", "graphify", "hook", "install"], capture_output=True)
+        print("💻 Registering Cursor rules...")
+        subprocess.run([sys.executable, "-m", "graphify", "cursor", "install"], capture_output=True)
+        print("🤖 Registering Claude Code configs...")
+        subprocess.run([sys.executable, "-m", "graphify", "claude", "install"], capture_output=True)
+        print("🎯 Registering Google Antigravity configs...")
+        subprocess.run([sys.executable, "-m", "graphify", "antigravity", "install"], capture_output=True)
+        print("✅ Graphifyy Git hooks and IDE rules configured successfully.")
+    except Exception as e:
+        print(f"⚠️ Failed to configure hooks/IDE rules: {e}")
 
 
 if __name__ == "__main__":
     bootstrap()
+

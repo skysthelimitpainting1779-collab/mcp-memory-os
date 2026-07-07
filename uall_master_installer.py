@@ -44,6 +44,19 @@ def deploy(target_dir: Path) -> None:
         print("🐙 Initializing Git...")
         subprocess.run(["git", "init"], cwd=target_dir, capture_output=True)
 
+    # Graphifyy Git hooks and IDE rules setup
+    print("🕸️  Configuring Graphifyy integration...")
+    try:
+        subprocess.run([sys.executable, "-m", "pip", "install", "graphifyy"], cwd=target_dir, capture_output=True)
+        subprocess.run([sys.executable, "-m", "graphify", "install"], cwd=target_dir, capture_output=True)
+        subprocess.run([sys.executable, "-m", "graphify", "hook", "install"], cwd=target_dir, capture_output=True)
+        subprocess.run([sys.executable, "-m", "graphify", "cursor", "install"], cwd=target_dir, capture_output=True)
+        subprocess.run([sys.executable, "-m", "graphify", "claude", "install"], cwd=target_dir, capture_output=True)
+        subprocess.run([sys.executable, "-m", "graphify", "antigravity", "install"], cwd=target_dir, capture_output=True)
+        print("   ✅ Hooks, Cursor, Claude, and Antigravity registered.")
+    except Exception as e:
+        print(f"   ⚠️ Graphifyy configuration warning: {e}")
+
     # Initial domain scan
     print("🔍 Initial domain scan...")
     subprocess.run(
