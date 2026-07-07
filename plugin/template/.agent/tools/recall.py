@@ -178,14 +178,51 @@ def main():
     # 1. Active task context
     task_ctx = get_active_task_context()
     if task_ctx:
-        print(f"\n📌 [ACTIVE TASK]\n  {task_ctx}")
+        print(f"\n[ACTIVE TASK]\n  {task_ctx}")
 
-    # 2. Self-Healing hints — surfaces FIRST so agent can't miss them
+    # 2. Design doc — ALWAYS surfaced first so agents see architecture constraints
+    design_path = AGENT / "spec" / "design.md"
+    if design_path.exists():
+        design_text = design_path.read_text(encoding="utf-8")
+        # Check if it's still a stub
+        if "(fill in)" in design_text and design_text.count("(fill in)") > 3:
+            print("\n[DESIGN SPEC — STUB WARNING]")
+            print("  .agent/spec/design.md has not been filled in.")
+            print("  Architecture context unavailable. Fill it in before complex tasks.")
+        else:
+            # Surface key sections only: Context+Scope, Goals, Non-Goals, Do Not Touch
+            sections_to_show = [
+                "## Context & Scope", "## Goals", "## Non-Goals", "## Do Not Touch"
+            ]
+            lines = design_text.splitlines()
+            in_section = False
+            current_section = []
+            shown = []
+            for line in lines:
+                if any(line.startswith(s) for s in sections_to_show):
+                    if current_section:
+                        shown.extend(current_section)
+                    current_section = [line]
+                    in_section = True
+                elif in_section and line.startswith("## ") and not any(line.startswith(s) for s in sections_to_show):
+                    shown.extend(current_section)
+                    current_section = []
+                    in_section = False
+                elif in_section:
+                    current_section.append(line)
+            if current_section:
+                shown.extend(current_section)
+            if shown:
+                print("\n[DESIGN SPEC — ARCHITECTURE CONSTRAINTS]")
+                print("\n".join(shown[:40]))  # cap at 40 lines
+
+    # 3. Self-Healing hints — surfaces so agent can't miss them
     hints = get_self_healing_hints()
     if hints:
-        print("\n⚠️  [CRITICAL SELF-HEALING HINTS — READ BEFORE PROCEEDING]")
+        print("\n[CRITICAL SELF-HEALING HINTS — READ BEFORE PROCEEDING]")
         print(hints)
-        print("─" * 50)
+        print("-" * 50)
+
 
     # 3. Graph context — structural knowledge
     graph = get_graph_context(args.task)

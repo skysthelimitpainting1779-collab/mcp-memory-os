@@ -67,8 +67,10 @@ def bootstrap() -> None:
         )
         print("[OK] GOVERNANCE.md created")
 
-    # 4. design.md — Google open spec format with auto-detected stack
+    # 4. Auto-detect project type and write canonical Google design doc format
     design_path = Path(".agent/spec/design.md")
+    project_name = ROOT.name
+    from datetime import date
     stack_lines = []
     if Path("package.json").exists():
         stack_lines.append("- Runtime: Node.js / JavaScript")
@@ -84,28 +86,58 @@ def bootstrap() -> None:
 
     design_path.write_text(
         f"# Design Doc: {project_name}\n\n"
-        "> STATUS: DRAFT — ACTION REQUIRED: Fill in all (fill in) sections.\n\n"
-        "## Overview\n"
-        "<!-- 1-3 sentences: what this project does and why -->\n"
-        "(fill in)\n\n"
-        "## Background & Motivation\n"
+        "| Field | Value |\n"
+        "|-------|-------|\n"
+        "| **Status** | DRAFT — ACTION REQUIRED: fill in all (fill in) sections |\n"
+        f"| **Authors** | (fill in) |\n"
+        f"| **Last Updated** | {date.today()} |\n\n"
+        "---\n\n"
+        "## Context & Scope\n"
+        "<!-- Succinct objective background. What landscape is this being built in? "
+        "What is actually being built? Assume some prior knowledge. -->\n"
         "(fill in)\n\n"
         "## Goals\n"
+        "<!-- Bullet list of what the system MUST achieve. "
+        "Focus on technical outcomes, not implementation steps. -->\n"
         "- (fill in)\n\n"
         "## Non-Goals\n"
+        "<!-- Things that COULD reasonably be goals but are explicitly NOT. "
+        "Example: 'ACID compliance', 'sub-10ms latency'. NOT negated goals like 'must not crash'. -->\n"
         "- (fill in)\n\n"
-        "## Stack & Architecture\n"
+        "## The Actual Design\n\n"
+        "### Overview\n"
+        "<!-- High-level description of the proposed solution. -->\n"
+        "(fill in)\n\n"
+        "### System Context\n"
+        "<!-- How does this system fit into the larger technical landscape? "
+        "Add a diagram if helpful (ASCII or Mermaid). -->\n"
+        "(fill in)\n\n"
+        "### Stack & Key Components\n"
         f"{stack_block}\n"
         "- Framework: (fill in)\n"
         "- Database: (fill in)\n"
         "- Key libraries: (fill in)\n\n"
-        "## Key Modules\n"
-        "| Module | Purpose |\n"
-        "|--------|---------|\n"
+        "### APIs & Interfaces\n"
+        "<!-- Sketch the key APIs. Don't copy-paste full schemas — focus on design-relevant parts. -->\n"
+        "(fill in)\n\n"
+        "### Data Storage\n"
+        "<!-- How and in what form is data stored? Focus on design trade-offs. -->\n"
+        "(fill in)\n\n"
+        "## Alternatives Considered\n"
+        "<!-- IMPORTANT: This is one of the most valuable sections. "
+        "List alternative designs and explain WHY they were rejected. "
+        "Show the trade-offs that led to the chosen design. -->\n"
+        "| Alternative | Why Rejected |\n"
+        "|-------------|--------------|\n"
         "| (fill in) | (fill in) |\n\n"
-        "## Design Decisions\n"
-        "- (fill in)\n\n"
+        "## Cross-Cutting Concerns\n"
+        "<!-- Security, privacy, observability, scalability. Short sections each. -->\n"
+        "- **Security:** (fill in)\n"
+        "- **Privacy:** (fill in)\n"
+        "- **Observability:** (fill in)\n"
+        "- **Scalability:** (fill in)\n\n"
         "## Do Not Touch\n"
+        "<!-- Files that must never be modified without explicit human approval. -->\n"
         "- `.agent/tools/` — UALL kernel, gate-protected\n"
         "- `.agent/GOVERNANCE.md` — requires human approval\n\n"
         "## Test & Verify\n"
@@ -113,10 +145,11 @@ def bootstrap() -> None:
         "python uall.py /verify\n"
         "```\n\n"
         "## Open Questions\n"
+        "<!-- Unresolved design questions. Remove when resolved or move to an Amendment. -->\n"
         "- (fill in)\n",
         encoding="utf-8"
     )
-    print("[OK] design.md created (Google open spec format — ACTION REQUIRED: fill in)")
+    print("[OK] design.md created (canonical Google design doc format — ACTION REQUIRED: fill in)")
 
     # 5. Git init if needed
     if not Path(".git").exists():
