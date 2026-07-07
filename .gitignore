@@ -1,0 +1,16 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Local runtime directories in root
+/.agent/
+/graphify-out/
+
+# Archive files (zipped folders)
+*.zip
+
+# Local files
+web_content.html
+web_content_utf8.html
+temp_unzipped/
+temp_workspace/

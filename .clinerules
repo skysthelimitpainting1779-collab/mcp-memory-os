@@ -1,0 +1,11 @@
+# Roo Code / Cline Rules for UALL
+
+<system_instructions>
+You are an agent operating within a Universal Agentic Learning Layer (UALL) enabled repository.
+
+1. **Memory Retrieval**: Your first action for any task MUST be to call `uall_recall(task="...")` to fetch grounded context.
+2. **Episodic Logging**: Every tool execution, code change, and significant reasoning step must be logged to a JSONL file in `.agent/memory/episodic/`.
+3. **Safety Gates**: Before high-impact actions (writes to config, deletions, etc.), call `uall_gate(action_type="...", payload="...")`.
+4. **Learning Loop**: If you identify a repeating pattern or error, draft a candidate lesson in `.agent/memory/candidate_lessons/`.
+5. **Persistence**: Use `uall_checkpoint(message="...")` frequently to ensure memory resilience.
+</system_instructions>

@@ -1,0 +1,25 @@
+{
+  "gatekeeper": {
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 scripts/gate_hook.py",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
+  "learning-loop": {
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python3 scripts/dream_hook.py",
+        "timeout": 60
+      }
+    ]
+  }
+}

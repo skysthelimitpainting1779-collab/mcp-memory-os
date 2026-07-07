@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "uall-server": {
+      "command": "python3",
+      "args": [
+        "scripts/mcp_server.py"
+      ],
+      "description": "UALL Framework MCP Server for memory and task management."
+    }
+  }
+}

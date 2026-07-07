@@ -1,0 +1,24 @@
+rules:
+  - id: check-framework-decoupling
+    patterns:
+      - pattern: |
+          import uall_framework
+      - pattern-not: |
+          import uall_framework # allowed-internal
+    message: "Direct import of UALL framework detected in project code. This violates the Decoupling Principle."
+    languages: [python]
+    severity: ERROR
+
+  - id: block-unsafe-subprocess
+    patterns:
+      - pattern: subprocess.run(..., shell=True, ...)
+    message: "Unsafe subprocess execution with shell=True detected. This violates the Ruthless Constraint policy."
+    languages: [python]
+    severity: ERROR
+
+  - id: prevent-kernel-bypass
+    patterns:
+      - pattern: open(".agent/GOVERNANCE.md", "w")
+    message: "Attempted direct write to UALL Governance kernel detected."
+    languages: [python]
+    severity: ERROR
