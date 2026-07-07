@@ -14,3 +14,8 @@ web_content.html
 web_content_utf8.html
 temp_unzipped/
 temp_workspace/
+
+# UALL ephemeral memory
+.agent/memory/episodic/
+.agent/memory/.index/
+.agent/.verified

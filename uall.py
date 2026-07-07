@@ -124,16 +124,30 @@ def _print_status() -> None:
     active_task = "none"
     active_task_file = AGENT_DIR / ".active_task"
     if active_task_file.exists():
-        active_task = active_task_file.read_text().strip()
+        active_task = active_task_file.read_text(encoding="utf-8").strip()
 
-    index_status = "✅ built" if db_path.exists() else "⚠️  missing (run /index)"
-    verified = "✅ unlocked" if (AGENT_DIR / ".verified").exists() else "🔒 locked"
+    # Design spec health
+    design_path = AGENT_DIR / "spec" / "design.md"
+    if not design_path.exists():
+        design_status = "[MISSING] Create .agent/spec/design.md"
+    elif "ACTION REQUIRED" in design_path.read_text(encoding="utf-8"):
+        design_status = "[STUB] Fill in .agent/spec/design.md before running tasks"
+    else:
+        design_status = "[OK]"
+
+    playbook_path = AGENT_DIR / "PLAYBOOK.md"
+    playbook_status = "[OK]" if playbook_path.exists() else "[MISSING] run /graduate to populate"
+
+    index_status = "[OK]" if db_path.exists() else "[MISSING] run /index"
+    verified = "[UNLOCKED]" if (AGENT_DIR / ".verified").exists() else "[LOCKED]"
 
     print("=" * 60)
-    print("📊 UALL v2.0 Status")
+    print("UALL v3.0 Status")
     print("=" * 60)
     print(f"  Project Root  : {ROOT}")
     print(f"  Active Task   : {active_task}")
+    print(f"  Design Spec   : {design_status}")
+    print(f"  Playbook      : {playbook_status}")
     print(f"  Episodic Logs : {log_count} files")
     print(f"  Candidates    : {candidate_count} pending review")
     print(f"  Graduated     : {graduated_count} lessons")
@@ -141,6 +155,12 @@ def _print_status() -> None:
     print(f"  Memory Index  : {index_status}")
     print(f"  Checkpoint    : {verified}")
     print("=" * 60)
+    if "[STUB]" in design_status or "[MISSING]" in design_status:
+        print()
+        print("  ACTION REQUIRED: .agent/spec/design.md is not filled in.")
+        print("  Agents running tasks without it will have no architecture context.")
+        print("  Edit it now, then re-run: python uall.py /status")
+
 
 
 def _print_help() -> None:

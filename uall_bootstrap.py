@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
 uall_bootstrap.py — Lightweight bootstrap for an existing project.
-Run from inside the project root: python3 uall_bootstrap.py
+Run from inside the project root: python uall_bootstrap.py
 
-Creates the .agent/ skeleton and copies the uall.py interface.
-Does NOT require uall-template/ to exist — generates minimal stubs.
+Creates the .agent/ skeleton, generates all IDE instruction files,
+and configures Graphifyy. Does NOT require uall-template/ to exist.
 """
-import os
+import importlib.util
 import shutil
 import subprocess
 import sys
@@ -16,8 +16,10 @@ ROOT = Path.cwd()
 
 
 def bootstrap() -> None:
-    print("🚀 UALL Bootstrap: Initializing Agentic Intelligence Layer")
-    print("=" * 56)
+    print("UALL Bootstrap v3.0: Initializing Agentic Intelligence Layer")
+    print("=" * 60)
+
+    project_name = ROOT.name
 
     # 1. Directory structure
     dirs = [
@@ -38,7 +40,7 @@ def bootstrap() -> None:
     ]
     for d in dirs:
         Path(d).mkdir(parents=True, exist_ok=True)
-    print(f"✅ Directory structure created ({len(dirs)} dirs)")
+    print(f"[OK] Directory structure created ({len(dirs)} dirs)")
 
     # 2. Copy tools from installer source if available
     installer_root = Path(__file__).parent
@@ -48,52 +50,136 @@ def bootstrap() -> None:
             dst = Path(".agent/tools") / tool.name
             if not dst.exists():
                 shutil.copy2(tool, dst)
-        print("✅ Tools copied from template")
+        print("[OK] Tools copied from template")
     else:
-        print("⚠️  template not found in plugin/template — tools must be added manually")
+        print("[WARN] plugin/template not found — tools must be added manually")
 
     # 3. Core governance stub
     gov_path = Path(".agent/GOVERNANCE.md")
     if not gov_path.exists():
         gov_path.write_text(
             "# Governance & Safety Policy\n\n"
-            "## Risk Tiers\n- Tier 1: Auto-Approve\n- Tier 2: Consensus\n- Tier 3: Human Review\n"
+            "## Risk Tiers\n"
+            "- Tier 1 (Auto-Approve): Read-only, comments, docs\n"
+            "- Tier 2 (Consensus): Code changes, new files, config edits\n"
+            "- Tier 3 (Human Review): Deleting files, modifying .agent/tools/, secrets\n",
+            encoding="utf-8"
         )
+        print("[OK] GOVERNANCE.md created")
 
-    # 4. Auto-detect project type
+    # 4. design.md — Google open spec format with auto-detected stack
     design_path = Path(".agent/spec/design.md")
-    project_name = ROOT.name
-    lines = [f"# Project Design: {project_name}\n\n## Auto-Discovery Results\n"]
+    stack_lines = []
     if Path("package.json").exists():
-        lines.append("- Type: Node.js / JavaScript\n")
+        stack_lines.append("- Runtime: Node.js / JavaScript")
     if Path("pyproject.toml").exists() or Path("requirements.txt").exists():
-        lines.append("- Type: Python\n")
+        stack_lines.append("- Runtime: Python")
     if Path("go.mod").exists():
-        lines.append("- Type: Go\n")
+        stack_lines.append("- Runtime: Go")
     if Path("Cargo.toml").exists():
-        lines.append("- Type: Rust\n")
-    lines.append(f"- Root files: {', '.join(p.name for p in ROOT.iterdir() if p.is_file())[:200]}\n")
-    design_path.write_text("".join(lines))
-    print("✅ Initial design.md created")
+        stack_lines.append("- Runtime: Rust")
+    if not stack_lines:
+        stack_lines.append("- Runtime: (fill in)")
+    stack_block = "\n".join(stack_lines)
 
-    # 5. Git
+    design_path.write_text(
+        f"# Design Doc: {project_name}\n\n"
+        "> STATUS: DRAFT — ACTION REQUIRED: Fill in all (fill in) sections.\n\n"
+        "## Overview\n"
+        "<!-- 1-3 sentences: what this project does and why -->\n"
+        "(fill in)\n\n"
+        "## Background & Motivation\n"
+        "(fill in)\n\n"
+        "## Goals\n"
+        "- (fill in)\n\n"
+        "## Non-Goals\n"
+        "- (fill in)\n\n"
+        "## Stack & Architecture\n"
+        f"{stack_block}\n"
+        "- Framework: (fill in)\n"
+        "- Database: (fill in)\n"
+        "- Key libraries: (fill in)\n\n"
+        "## Key Modules\n"
+        "| Module | Purpose |\n"
+        "|--------|---------|\n"
+        "| (fill in) | (fill in) |\n\n"
+        "## Design Decisions\n"
+        "- (fill in)\n\n"
+        "## Do Not Touch\n"
+        "- `.agent/tools/` — UALL kernel, gate-protected\n"
+        "- `.agent/GOVERNANCE.md` — requires human approval\n\n"
+        "## Test & Verify\n"
+        "```bash\n"
+        "python uall.py /verify\n"
+        "```\n\n"
+        "## Open Questions\n"
+        "- (fill in)\n",
+        encoding="utf-8"
+    )
+    print("[OK] design.md created (Google open spec format — ACTION REQUIRED: fill in)")
+
+    # 5. Git init if needed
     if not Path(".git").exists():
         subprocess.run(["git", "init"], capture_output=True)
-        print("✅ Git repository initialized")
+        print("[OK] Git repository initialized")
 
-    # 6. Graphifyy integration setup
+    # 6. Update .gitignore with UALL-specific entries
+    _update_gitignore(ROOT)
+
+    # 7. Graphifyy: detect, install if missing, wire IDE integrations
     setup_graphify()
 
-    print(f"\n✅ UALL integrated into '{project_name}'")
+    # 8. Generate ALL IDE instruction files via master installer
+    _call_generate_ide_files(ROOT)
+
+    print(f"\n[OK] UALL integrated into '{project_name}'")
     print("\nNext steps:")
     print("  python uall.py /status")
+    print("  Fill in: .agent/spec/design.md  <-- ACTION REQUIRED")
     print("  python uall.py /task <TASK-ID>")
+
+
+def _update_gitignore(root: Path) -> None:
+    """Add UALL-specific entries to .gitignore without clobbering existing ones."""
+    gi = root / ".gitignore"
+    existing = gi.read_text(encoding="utf-8") if gi.exists() else ""
+    entries = [
+        ("# UALL — ephemeral memory (never commit raw episodic logs)", ""),
+        (".agent/memory/episodic/", ".agent/memory/episodic/"),
+        (".agent/memory/.index/", ".agent/memory/.index/"),
+        (".agent/.verified", ".agent/.verified"),
+        ("# Graphifyy build artifacts", ""),
+        ("graphify-out/", "graphify-out/"),
+        ("*.graphify.tmp", "*.graphify.tmp"),
+    ]
+    to_add = []
+    for comment, pattern in entries:
+        check = pattern if pattern else comment
+        if check and check not in existing:
+            to_add.append(comment if not pattern else pattern)
+    if to_add:
+        with gi.open("a", encoding="utf-8") as f:
+            f.write("\n" + "\n".join(to_add) + "\n")
+        print("[OK] .gitignore updated with UALL entries")
+
+
+def _call_generate_ide_files(root: Path) -> None:
+    """Import _generate_ide_files from master installer and run it."""
+    installer_py = Path(__file__).parent / "uall_master_installer.py"
+    if not installer_py.exists():
+        print("[WARN] uall_master_installer.py not found — IDE files not generated")
+        return
+    try:
+        spec = importlib.util.spec_from_file_location("uall_installer", installer_py)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        mod._generate_ide_files(root)
+    except Exception as e:
+        print(f"[WARN] IDE file generation failed: {e}")
 
 
 def setup_graphify() -> None:
     """Install graphify only if not present; prefer uv over pip. Then wire IDE integrations."""
-    import shutil as _shutil
-
     print("Checking Graphifyy integration...")
 
     # 1. Check if already installed
@@ -103,6 +189,7 @@ def setup_graphify() -> None:
         print(f"   [OK] graphifyy {ver} already installed — skipping install")
     except Exception:
         print("   [..] graphifyy not found — installing...")
+        import shutil as _shutil
         if _shutil.which("uv"):
             cmd = ["uv", "pip", "install", "graphifyy"]
             installer = "uv"
@@ -126,7 +213,7 @@ def setup_graphify() -> None:
     except Exception as e:
         print(f"   [WARN] graphify install failed: {e}")
 
-    # 3. Wire IDE integrations
+    # 3. Wire graphify IDE integrations BEFORE _generate_ide_files appends UALL content
     for subcmd, label in [
         (["hook", "install"], "git hooks"),
         (["cursor", "install"], "Cursor"),
