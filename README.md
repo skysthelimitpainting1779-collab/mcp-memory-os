@@ -1,77 +1,149 @@
-# UALL — Universal Agentic Learning Layer
+# 🧠 AgentOS — The Portable Memory, Security & Self-Healing Layer for AI Agents
 
-A portable AI agent operating system. Drop `.agent/` and `uall.py` into any project and your agent gains memory, governance, and continuous learning.
+[![GitHub license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org)
+[![Agent Compatibility](https://img.shields.io/badge/agents-Cursor%20%7C%20Claude%20%7C%20Custom-orange)](https://github.com)
 
-## Quick Start
+**Stop building stateless agents.** Turn Cursor, Claude Desktop, and custom agent scripts into production-grade developers. **AgentOS** (powered by UALL) is a lightweight, zero-dependency engine you can drop into any repository to instantly equip your AI developer with long-term memory, execution guardrails, and self-healing loops.
 
+```
+                  ┌────────────────────────────────────────┐
+                  │          AI AGENT (Cursor/Claude)      │
+                  └──────────────────┬─────────────────────┘
+                                     │ (MCP / CLI)
+                  ┌──────────────────▼─────────────────────┐
+                  │                AgentOS                 │
+                  └──────┬───────────┬──────────────┬──────┘
+                         │           │              │
+           ┌─────────────▼─────┐┌────▼────────┐┌────▼─────────────┐
+           │   HYBRID MEMORY   ││ GOVERNANCE  ││   SELF-HEALING   │
+           │ SQLite FTS5 + Graph││ Policy Gate ││ Log Correlation │
+           └───────────────────┘└─────────────┘└──────────────────┘
+```
+
+---
+
+## ⚡ The Value Proposition
+
+| Feature | Standard AI Agent | AgentOS-Empowered Agent |
+| :--- | :--- | :--- |
+| **Context Retention** | Single-session, forgets past file paths & fixes | Hybrid FTS5 + Entity Relationship Knowledge Graph |
+| **Execution Safety** | Runs arbitrary commands blindly (dangerous) | Pre-command gatekeeper matching your security policy |
+| **Continuous Learning**| Repeats identical errors and loops infinitely | Failure correlation mining + active self-healing hints |
+| **State Tracking** | Manual git commits (or none) | Auto-verified Git checkpoints after successful quality gates |
+
+---
+
+## 🛠️ The Agentic Loop
+
+AgentOS organizes the agent's behavior into a structured, continuous reinforcement loop:
+
+```mermaid
+graph TD
+    A["Initialize Context (/task)"] --> B["Memory Recall (/recall)"]
+    B --> C["Shadow-Trace Commands (tracer.py)"]
+    C --> D["Auto-Heal on Failures (self_heal.py)"]
+    D --> E["Mine Logs for Lessons (/dream)"]
+    E --> F["Evaluate & Evolve Skills (/graduate)"]
+    F --> G["Run Quality & Lint Gates (/verify)"]
+    G --> H["Git-Checkpoint State (/checkpoint)"]
+    H --> A
+```
+
+---
+
+## 🚀 Quick Start (5 Seconds)
+
+Add AgentOS to any project instantly:
+
+### 1. Bootstrap the Engine
+Run the bootstrap script inside your target project root:
 ```bash
-# In any project
-python3 uall.py /status          # Check brain health
-python3 uall.py /task TASK-123   # Initialize task context
-python3 uall.py /recall "jwt auth pattern"  # Search memory
+python uall_bootstrap.py
+```
+This initializes the `.agent/` directory structure, detects your project type, and sets up your local configurations.
+
+### 2. Check Agent Status
+Check the status of the local AgentOS brain:
+```bash
+python uall.py /status
 ```
 
-## The Learning Loop
+### 3. Connect to your IDE (MCP Setup)
+AgentOS exposes a local Model Context Protocol (MCP) server so Cursor, Claude Desktop, or VSCode can access its tools natively. 
 
+Add this to your IDE's MCP settings:
+```json
+{
+  "mcpServers": {
+    "agent-os": {
+      "command": "python",
+      "args": [".agent/tools/mcp_server.py"],
+      "cwd": "."
+    }
+  }
+}
 ```
-/task → /recall → [execute via tracer.py] → /dream → /graduate → /checkpoint
-```
+*(For detailed setup and configurations, see [MCP_SETUP.md](file:///C:/Users/Johnny%20Cage/Projects/UALL-Antigravity/MCP_SETUP.md))*
 
-1. **`/task <id>`** — Link work to a Linear/GitHub ticket
-2. **`/recall "<desc>"`** — Surface relevant memory (FTS + graph + hints)
-3. **`tracer.py "<cmd>"`** — Wrap every shell command for telemetry
-4. **`/dream`** — Mine failure correlations from logs → candidate lessons
-5. **`/enhance`** → **`/audit`** → **`/graduate`** — Evolve agent skills
-6. **`/verify`** — Run semgrep + ruff + pytest → unlock `/checkpoint`
-7. **`/checkpoint "<msg>"`** — Git-commit the brain state
-8. **`/report`** — Generate PR/Linear intelligence summary
+---
 
-## Structure
+## 📦 Architecture & Directory Layout
+
+AgentOS operates entirely locally within a portable `.agent/` directory:
 
 ```
 .agent/
-├── GOVERNANCE.md          # Risk tiers + capability grants
-├── PLAYBOOK.md            # Auto-generated from graduated lessons
-├── AGENTS.md              # Role definitions + SOP
+├── GOVERNANCE.md          # Security policy, risk tiers, & capability grants
+├── PLAYBOOK.md            # Auto-generated knowledge-base from graduated lessons
+├── AGENTS.md              # Role definitions & standard operating procedures
 ├── memory/
-│   ├── episodic/          # Per-day JSONL event logs
-│   ├── candidate_lessons/ # Proposed learnings (awaiting graduation)
-│   ├── graduated/         # LESSONS.md + LESSONS.jsonl (source of truth)
-│   ├── graph/             # entities.md + relationships.jsonl
-│   └── .index/            # SQLite FTS5 search index
+│   ├── episodic/          # Per-day JSONL event logs captured during commands
+│   ├── candidate_lessons/ # Proposed learnings awaiting graduation
+│   ├── graduated/         # LESSONS.md + LESSONS.jsonl (the source of truth)
+│   ├── graph/             # entities.md + relationships.jsonl knowledge graph
+│   └── .index/            # SQLite FTS5 search index database
 ├── skills/
-│   ├── core/              # Framework skills (UALL_MASTER.md)
+│   ├── core/              # Built-in system instructions
 │   ├── domain/            # Graduated project-specific skills
-│   └── pending/           # Awaiting /audit approval
+│   └── pending/           # Staged skills awaiting human review
 ├── protocols/
-│   ├── semgrep_rules.yaml # Security + decoupling checks
-│   ├── hook_patterns.json # Pre/post-tool hooks
-│   └── self_healing_hints.md  # Active failure-avoidance hints
-├── spec/
-│   ├── design.md          # Auto-generated domain knowledge
-│   └── tasks/             # Per-task context JSON files
-└── tools/                 # All UALL executables
-    ├── _agent_utils.py    # Shared path helpers (import me!)
-    ├── recall.py          # Hybrid FTS+graph memory search
-    ├── auto_dream.py      # Failure correlation mining
-    ├── graduate.py        # Candidate → Playbook promotion
-    ├── index_memory.py    # Incremental FTS5 index builder
-    ├── graph_sync.py      # Temporal knowledge graph
-    ├── tracer.py          # Command shadow tracer
-    ├── verify.py          # Semgrep + Ruff + Pytest gate
-    ├── recover.py         # Git checkpoint & recovery
-    ├── gate.py            # Behavioral gatekeeper
-    ├── task_bridge.py     # Linear/GitHub task linkage
-    ├── self_heal.py       # Failure pattern → active hints
-    ├── enhance.py         # Pattern → skill scaffolder
-    ├── audit.py           # Adversarial skill reviewer
-    ├── report.py          # Intelligence report generator
-    ├── export_insights.py # Sanitized cross-repo export
-    ├── security_v2.py     # Kernel integrity signing/verify
-    ├── mcp_server.py      # MCP server for IDE integration
-    └── pre_commit_hook.py # Git hook for auto-indexing
+│   ├── semgrep_rules.yaml # Static security & structural checks
+│   ├── hook_patterns.json # Event-driven pre/post tool hooks
+│   └── self_healing_hints.md # Dynamic hints built from command failures
+└── tools/                 # Python engine scripts (verify, recall, self_heal, etc.)
 ```
 
-## MCP / IDE Integration
+---
 
-See `MCP_SETUP.md` for Claude Desktop / Cursor setup.
+## 💎 Key Features
+
+### 🧠 1. Hybrid Semantic & Graph Memory
+Standard search is not enough. AgentOS combines **SQLite FTS5 full-text indexing** with an **Entity-Relationship Knowledge Graph** to trace code dependencies, previous refactorings, and file mappings.
+* `/recall <query>` queries both lexical indices and code relationships to construct a hyper-relevant context.
+
+### 🛡️ 2. Pre-Command Governance
+Protect your environment. When your agent attempts to execute a terminal command (e.g., `git`, `docker`, `rm`), the AgentOS pre-tool hook interceptor validates the command against [.agent/GOVERNANCE.md](file:///C:/Users/Johnny%20Cage/Projects/UALL-Antigravity/.agent/GOVERNANCE.md).
+* Auto-approves safe commands (Tier 1).
+* Prompts or logs medium-risk activities (Tier 2).
+* Blocks high-risk or unauthorized commands (Tier 3) until approved.
+
+### 🩹 3. Self-Healing Failures
+When a task fails, `tracer.py` captures the traceback and exit code. `self_heal.py` correlates recurring failures to write active hints in [protocols/self_healing_hints.md](file:///C:/Users/Johnny%20Cage/Projects/UALL-Antigravity/.agent/protocols/self_healing_hints.md), which are automatically injected into the agent's context next time it attempts a similar command.
+
+### 💾 4. Verified Checkpoint & Recovery
+Never let an agent break your code.
+* `/verify` runs Semgrep rules, Ruff checks, and pytest suites.
+* On success, it unlocks `/checkpoint "<msg>"` which creates a Git-signed snapshot of the code and agent memory.
+* If the agent goes off the rails, `/recover` instantly rolls back the codebase and brain state to the last verified checkpoint.
+
+---
+
+> [!IMPORTANT]
+> **AgentOS** is completely open-source, local-first, and contains no external API dependencies. All memory, database indices, and event logs are stored directly in your codebase's `.agent/` folder.
+
+---
+
+## 🌟 Support & Contributions
+
+Give us a star ⭐ if this project helps you build better agents! Contributions, bug reports, and suggestions are welcome.

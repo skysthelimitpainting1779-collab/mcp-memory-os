@@ -1,22 +1,35 @@
-# AGENTS.md
+# 👥 AgentOS Roles & SOP Guidelines
 
-This project is managed by UALL (Universal Agentic Learning Layer).
+This project utilizes **AgentOS** (powered by UALL) to maintain structural integrity, long-term memory, and codebase safety.
 
-## Project Status
-- **Active Task**: TEST-1
-- **System Version**: UALL v2.0
+---
 
-## Core Commands
-- `/status` — Check brain health
-- `/recall <desc>` — Search project memory
-- `/task <id>` — Initialize task context
-- `/verify` — Run security & quality gates
-- `/checkpoint` — Persist verified state
+## 🤖 Active Agent Profile
+- **System Version:** AgentOS v2.0
+- **Operational Mode:** Local-first, git-backed learning loop
 
-## Operational Rules
-1. **Trace Everything**: Run all shell commands via `python3 .agent/tools/tracer.py "<cmd>"`.
-2. **Verify First**: Never `/checkpoint` without a successful `/verify`.
-3. **Memory First**: Always `/recall` before starting a new task.
+---
 
-## Tech Stack
-- Python detected
+## 📋 Core Agent Commands
+
+Use these commands via the `uall.py` interface inside the project:
+* `/status` — Verify the health of the agent's memory index and active task.
+* `/task <id>` — Link the workspace to a specific task identifier (e.g., Jira, Linear, or GitHub issues).
+* `/recall <desc>` — Query past lessons, context, and structural codebase mappings.
+* `/verify` — Run security scans (Semgrep), code linter (Ruff), and test suites (pytest).
+* `/checkpoint "<msg>"` — Commit current progress to Git (unlocked only after a successful `/verify`).
+
+---
+
+## 🛡️ Operational Guidelines
+
+To ensure consistency, safety, and learning, the agent must adhere to the following rules:
+
+1. **Memory First:** Always run `/recall` before starting a new task or editing complex code blocks to pull historical context.
+2. **Command Tracing:** Execute any command-line tools (e.g., `npm install`, `pytest`, `cargo build`) wrapped in `tracer.py`:
+   ```bash
+   python .agent/tools/tracer.py "<command>"
+   ```
+   This captures the command telemetry and logs execution metrics into the episodic brain.
+3. **Verify Before Checkpoint:** Never attempt to checkpoint the repository state without a successful `/verify` pass.
+4. **No Kernel Modification:** Do not modify core files in `.agent/tools/` or [.agent/GOVERNANCE.md](file:///C:/Users/Johnny%20Cage/Projects/UALL-Antigravity/.agent/GOVERNANCE.md) without human override approval.
