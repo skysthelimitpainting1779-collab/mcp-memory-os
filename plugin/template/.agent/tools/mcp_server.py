@@ -219,6 +219,48 @@ def uall_graphify(action: str = "extract", query: str = "") -> str:
     return run_tool("graphify_bridge.py", *args)
 
 
+@mcp.tool()
+def uall_graph_node(label: str) -> str:
+    """Get full details for a specific graph node by label or ID."""
+    return run_tool("graphify_bridge.py", "--node", label)
+
+
+@mcp.tool()
+def uall_graph_neighbors(label: str) -> str:
+    """Get all direct neighbors of a graph node with edge details."""
+    return run_tool("graphify_bridge.py", "--neighbors", label)
+
+
+@mcp.tool()
+def uall_graph_community(community_id: int) -> str:
+    """Get all nodes in a specific community by community ID."""
+    return run_tool("graphify_bridge.py", "--community", str(community_id))
+
+
+@mcp.tool()
+def uall_graph_gods(top_n: int = 10) -> str:
+    """Return the most connected nodes (core abstractions) in the graph."""
+    return run_tool("graphify_bridge.py", "--gods", str(top_n))
+
+
+@mcp.tool()
+def uall_graph_stats() -> str:
+    """Return summary statistics of the codebase knowledge graph."""
+    return run_tool("graphify_bridge.py", "--stats")
+
+
+@mcp.tool()
+def uall_graph_explain(label: str) -> str:
+    """Return a plain-language explanation of a concept node using Graphifyy."""
+    return run_tool("graphify_bridge.py", "--explain", label)
+
+
+@mcp.tool()
+def uall_graph_path(source: str, target: str) -> str:
+    """Find the shortest path between two concepts in the knowledge graph."""
+    return run_tool("graphify_bridge.py", "--path", source, target)
+
+
 if __name__ == "__main__":
     mcp.run()
 
